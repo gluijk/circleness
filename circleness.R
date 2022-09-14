@@ -1,6 +1,6 @@
 # Calculating the circleness of a stone with R
 # www.overfitting.net
-# https://www.overfitting.net/2022/08/correccion-de-distorsion-geometrica-en.html
+# https://www.overfitting.net/2022/09/calculando-la-redondez-de-una-piedra.html
 
 library(tiff)
 

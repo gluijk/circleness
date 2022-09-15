@@ -19,7 +19,7 @@ for (i in 1:NSTONES) {
     img=img-min(img)  # normalize to 0..1
     img=img/max(img)
     img=img^(1/2.2)  # 2.2 gamma curve
-    hist(img, breaks=1024)
+    # hist(img, breaks=512)
     
     TH=0.35  # 0.2  # black/white thresholds
     img[img<TH]=0

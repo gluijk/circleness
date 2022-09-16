@@ -7,7 +7,7 @@ library(tiff)
 
 NAME="circle"  # input RAW filenames
 OUTNAME="circlenorm"  # output normalized stone
-NSTONE=5
+NSTONE=5  # number of stones
 
 
 # READ RAW DATA AND NORMALIZE STONES TO BLACK/WHITE

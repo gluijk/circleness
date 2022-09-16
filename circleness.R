@@ -14,6 +14,7 @@ NSTONES=5
 
 # dcraw -v -r 1 1 1 1 -o 0 -4 -T *.arw (except stone 4)
 for (i in 1:NSTONES) {
+    print(paste0("Normalizing stone ", i, "..."))
     img=readTIFF(paste0(NAME, i, ".tiff"), native=FALSE, convert=FALSE)
     img=0.299*img[,,1]+0.587*img[,,2]+0.114*img[,,3]  # average channels
     img=img-min(img)  # normalize to 0..1
@@ -35,6 +36,7 @@ for (i in 1:NSTONES) {
 
 circle=c()
 for (i in 1:NSTONES) {
+    print(paste0("Calculating circleness of stone ", i, "..."))
     img=readTIFF(paste0(OUTNAME, i, "_.tif"), native=FALSE, convert=FALSE)
     # hist(img, breaks=512)
     
@@ -48,7 +50,7 @@ for (i in 1:NSTONES) {
     R=c()
     for (j in 0:(N-1)) {
         theta=j*2*pi/N
-        r=1
+        r=500  # all radius are >500
         costheta=cos(theta)
         sintheta=sin(theta)
         x1=x0+r*costheta
@@ -77,18 +79,20 @@ for (i in 1:NSTONES) {
         lines(seq(from=0, to=360, length.out=N), R, type='l', col=i)  
     }
     
+    VarR=mean((R-mean(R))^2)  # total variance of R
     k=1000  # circleness scaling factor
-    VarR=mean((R-mean(R))^2)  # total variance
-    circleness=exp(-k*VarR)  # scaling circleness to 1(=perfect circle)..0
+    circleness=exp(-k*VarR)  # scale circleness to 1(=perfect circle)..0
     circle=c(circle, circleness)
-    print(paste0("Stone ", i, ": ", circleness))    
+    print(paste0("  circleness=", circleness))    
     
     
     # Read bitmaps and implode stones from max radius
+    print(paste0("Morphing stone ", i, "..."))
     img=readTIFF(paste0(NAME, i, ".tif"), native=FALSE, convert=FALSE)
     img2=img*0+1
     
     COMPRESS=4  # compression factor
+    # Simple nearest neighbour interpolation
     for (x in round(x0-Rmax):round(x0+Rmax)) {
         for (y in round(y0-Rmax):round(y0+Rmax)) {
             r=((x-x0)^2+(y-y0)^2)^0.5
@@ -100,8 +104,8 @@ for (i in 1:NSTONES) {
 
     # Draw centre os mass axes and max radius circle
     # and save BEFORE and AFTER images
-    img[x0,,]=0
-    img[,y0,]=0
+    img[round(x0),,]=0
+    img[,round(y0),]=0
     for (j in 0:(N-1)) {
          theta=j*2*pi/N
          x1=x0+c(Rmax, Rmax, Rmax)*cos(theta)  #c(Rmean, Rmin, Rmax)*cos(theta)
@@ -112,8 +116,8 @@ for (i in 1:NSTONES) {
     writeTIFF(img, paste0(OUTNAME, i, "_BEFORE.tif"), bits.per.sample=16,
               compression="none")
     
-    img2[x0,,]=0
-    img2[,y0,]=0
+    img2[round(x0),,]=0
+    img2[,round(y0),]=0
     for (j in 0:(N-1)) {
         theta=j*2*pi/N
         x1=x0+Rmax*cos(theta)

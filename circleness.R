@@ -7,13 +7,13 @@ library(tiff)
 
 NAME="circle"  # input RAW filenames
 OUTNAME="circlenorm"  # output normalized stone
-NSTONES=5
+NSTONE=5
 
 
 # READ RAW DATA AND NORMALIZE STONES TO BLACK/WHITE
 
 # dcraw -v -r 1 1 1 1 -o 0 -4 -T *.arw (except stone 4)
-for (i in 1:NSTONES) {
+for (i in 1:NSTONE) {
     print(paste0("Normalizing stone ", i, "..."))
     img=readTIFF(paste0(NAME, i, ".tiff"), native=FALSE, convert=FALSE)
     img=0.299*img[,,1]+0.587*img[,,2]+0.114*img[,,3]  # average channels
@@ -35,7 +35,7 @@ for (i in 1:NSTONES) {
 # CALCULATE RADIUS PROFILE, CIRCLENESS AND EMPHASIZE RADIUS DIFFERENCES
 
 circle=c()
-for (i in 1:NSTONES) {
+for (i in 1:NSTONE) {
     print(paste0("Calculating circleness of stone ", i, "..."))
     img=readTIFF(paste0(OUTNAME, i, "_.tif"), native=FALSE, convert=FALSE)
     # hist(img, breaks=512)
@@ -46,10 +46,10 @@ for (i in 1:NSTONES) {
     tmp=col(img)*img
     y0=mean(tmp[tmp>0])  # cols
     
-    N=6000  # a good number of radial samples
+    NSAMPLE=6000  # a good number of radial samples
     R=c()
-    for (j in 0:(N-1)) {
-        theta=j*2*pi/N
+    for (j in 0:(NSAMPLE-1)) {
+        theta=j*2*pi/NSAMPLE
         r=500  # all radius are >500
         costheta=cos(theta)
         sintheta=sin(theta)
@@ -72,11 +72,11 @@ for (i in 1:NSTONES) {
     
     # Plot R/mean(R) for all the stones
     if (i==1) {
-        plot(seq(from=0, to=360, length.out=N), R, type='l', col=i,
+        plot(seq(from=0, to=360, length.out=NSAMPLE), R, type='l', col=i,
              ylim=c(0.85, 1.15), ylab='R/mean(R)', xlab='Angle')
         abline(h=1, col='lightgray')
     } else {
-        lines(seq(from=0, to=360, length.out=N), R, type='l', col=i)  
+        lines(seq(from=0, to=360, length.out=NSAMPLE), R, type='l', col=i)  
     }
     
     VarR=mean((R-mean(R))^2)  # total variance of R
@@ -106,8 +106,8 @@ for (i in 1:NSTONES) {
     # and save BEFORE and AFTER images
     img[round(x0),,]=0
     img[,round(y0),]=0
-    for (j in 0:(N-1)) {
-         theta=j*2*pi/N
+    for (j in 0:(NSAMPLE-1)) {
+         theta=j*2*pi/NSAMPLE
          x1=x0+c(Rmax, Rmax, Rmax)*cos(theta)  #c(Rmean, Rmin, Rmax)*cos(theta)
          y1=y0+c(Rmax, Rmax, Rmax)*sin(theta)  #c(Rmean, Rmin, Rmax)*sin(theta)
          for (k in 1:3) img[round(x1[k]), round(y1[k]),]=0
@@ -118,8 +118,8 @@ for (i in 1:NSTONES) {
     
     img2[round(x0),,]=0
     img2[,round(y0),]=0
-    for (j in 0:(N-1)) {
-        theta=j*2*pi/N
+    for (j in 0:(NSAMPLE-1)) {
+        theta=j*2*pi/NSAMPLE
         x1=x0+Rmax*cos(theta)
         y1=y0+Rmax*sin(theta)
         img2[round(x1), round(y1),]=0

@@ -102,7 +102,7 @@ for (i in 1:NSTONES) {
         }
     }
 
-    # Draw centre os mass axes and max radius circle
+    # Draw centre of mass, axes and max radius
     # and save BEFORE and AFTER images
     img[round(x0),,]=0
     img[,round(y0),]=0

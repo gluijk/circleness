@@ -20,7 +20,7 @@ for (i in 1:NSTONE) {
     img=0.299*img[,,1]+0.587*img[,,2]+0.114*img[,,3]  # CIE luminance
     img=img-min(img)  # normalize to 0..1
     img=img/max(img)
-    hist(img, breaks=512)
+    hist(img[img>0], breaks=512)
     
     TH=0.3  # black/white threshold
     img[img<TH]=0

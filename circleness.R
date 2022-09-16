@@ -16,13 +16,13 @@ NSTONE=5  # number of stones
 for (i in 1:NSTONE) {
     print(paste0("Normalizing stone ", i, "..."))
     img=readTIFF(paste0(NAME, i, ".tiff"), native=FALSE, convert=FALSE)
-    img=0.299*img[,,1]+0.587*img[,,2]+0.114*img[,,3]  # average channels
+    img=img^(1/2.2)  # delinearize with 2.2 gamma curve
+    img=0.299*img[,,1]+0.587*img[,,2]+0.114*img[,,3]  # CIE luminance
     img=img-min(img)  # normalize to 0..1
     img=img/max(img)
-    img=img^(1/2.2)  # 2.2 gamma curve
-    # hist(img, breaks=512)
+    hist(img, breaks=512)
     
-    TH=0.35  # 0.2  # black/white thresholds
+    TH=0.3  # black/white threshold
     img[img<TH]=0
     img[img>=TH]=1
     

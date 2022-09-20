@@ -47,21 +47,23 @@ for (i in 1:NSTONE) {
     y0=mean(tmp[tmp>0])  # cols
     
     NSAMPLE=6000  # a good number of radial samples
+    RES=0.5  # radius resolution
+    RINIT=500  # all radius are >500
     R=c()
     for (j in 0:(NSAMPLE-1)) {
         theta=j*2*pi/NSAMPLE
-        r=500  # all radius are >500
+        r=RINIT
         costheta=cos(theta)
         sintheta=sin(theta)
         x1=x0+r*costheta
         y1=y0+r*sintheta
         
         while (img[round(x1), round(y1)]==1) {
-            r=r+0.5
+            r=r+RES
             x1=x0+r*costheta
             y1=y0+r*sintheta          
         }
-        R=c(R,r)
+        R=c(R, r-RES/2)  # middle point between r (img==1) and r+RES (img==0)
     }
     
     Rmean=mean(R)  # mean radius in pixels

@@ -52,12 +52,12 @@ for (i in 1:NSTONE) {
     R=c()
     for (j in 0:(NSAMPLE-1)) {
         theta=j*2*pi/NSAMPLE
-        r=RINIT
         costheta=cos(theta)
         sintheta=sin(theta)
+        r=RINIT
+        
         x1=x0+r*costheta
         y1=y0+r*sintheta
-        
         while (img[round(x1), round(y1)]==1) {
             r=r+RES
             x1=x0+r*costheta
